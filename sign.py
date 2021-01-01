@@ -179,12 +179,10 @@ def main(token):
 
 
 if __name__ == "__main__":
-    # secret = input().strip().split('#')
-    # secret.append('')
-    # token = secret[0]
-    # sckey = secret[1]
-    token = 'd1b6f1e7-ce81-469e-8429-0c13b364143d'
-    sckey = "SCU143370Tc4ee103495a0e465135b92fba4af27465fef1c5e7800f"
+    secret = input().strip().split('#')
+    secret.append('')
+    token = secret[0]
+    sckey = secret[1]
     seconds = random.randint(10, 30)
     logging.info('将在 {} 秒后开始任务...'.format(seconds))
     time.sleep(seconds)
