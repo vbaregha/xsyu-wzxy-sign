@@ -1,11 +1,12 @@
 import requests, time, random
 import json
 import datetime
+import logging
 
-
-# 我在校园token
-#token = "d1b6f1e7-ce81-469e-8429-0c13b364143d"
-
+logging.basicConfig(
+  level = logging.INFO,
+  format = '%(asctime)s %(levelname)s %(message)s',
+  datefmt = '%Y-%m-%dT%H:%M:%S')
 
 # seq的1,2,3代表着早，中，晚
 def get_seq():
@@ -27,12 +28,13 @@ def http_post(url, headers={}, data={}, retry=3):
             res = requests.post(url, headers=headers, data=data)
             return res
         except Exception as e:
-            print("post请求错误: %s" % e)
+            logging.error("post请求错误: %s" % e)
             time.sleep(100)
-    print("本次请求失败！")
+    logging.error("本次发送请求失败！")
 
 
 class Remind:
+    sckey = False
     url = ""
     data = {
         "text": "校园签到打卡小助手-打卡",
@@ -40,19 +42,33 @@ class Remind:
     }
 
     def __init__(self, sckey):
+        self.sckey = sckey
         self.url = "https://sc.ftqq.com/{}.send".format(sckey)
     
+    def send_msg(self):
+        res = http_post(self.url, data=self.data)
+        result = json.loads(res.text)['errmsg']
+        if result == 'success':
+            logging.info("推送消息成功: {}".format(res.text))
+        else:
+            logging.info("推送消息失败了: {}".format(res.text))
+
     def success(self,desp):
+        if sckey.startswith('SC'):
+            logging.warning('未正确配置SCKEY,跳过推送...')
+            return
         self.data['text']+='成功'
         self.data['desp'] = desp
-        res = http_post(self.url, data=self.data)
-        print(res, res.text)
+        self.send_msg()
+        
 
     def fail(self,desp):
+        if sckey.startswith('SC'):
+            logging.warning('未正确配置SCKEY,跳过推送...')
+            return
         self.data['text']+='失败'
         self.data['desp'] = desp
-        res = http_post(self.url, data=self.data)
-        print(res, res.text)
+        self.send_msg()
 
 
 class Req:
@@ -64,7 +80,7 @@ class Req:
         "charset": "utf-8",
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36 MicroMessenger/7.0.9.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat",
         "Referer": "https://servicewechat.com/wxce6d08f781975d91/155/page-frame.html",
-        "token": "",  # 此处填写token
+        "token": "",  # token
         #"Content-Length": "211"
     }
     
@@ -75,7 +91,18 @@ class Req:
     @staticmethod
     def get_random_temprature():
         random.seed(time.ctime())
-        return "{:.1f}".format(random.uniform(36.2, 36.7))
+        return "{:.1f}".format(random.uniform(36.2, 36.8))
+
+    def handle_res(self,res):
+        if res and res['code'] == 0:
+            logging.info("自动打卡签到结果 : code = {}".format(res['code']))
+            Remind(sckey).success(" ^_^已经自动为您打卡成功啦~ ")
+        elif res and res['code'] == -10:
+            logging.error("打卡失败,TOKEN已过期,时间:{}".format(datetime.datetime.now()))
+            Remind(sckey).fail(" @_@由于TOKEN过期失效,打卡失败了哦,请及时处理~ ")
+        else:
+            logging.error("打卡失败,时间:{}".format(datetime.datetime.now()))
+            Remind(sckey).fail(" @_@非常遗憾的通知您,打卡失败了哦,请及时处理~ ")
 
 
 class Inspect(Req):
@@ -96,16 +123,12 @@ class Inspect(Req):
         "myArea":""
     }
 
+
     def submit_insp(self):
         self.headers['Content-Type'] = "application/x-www-form-urlencoded"
         self.data['temperature'] = Req.get_random_temprature()
         res = http_post(self.saveUrl,headers=self.headers,data=self.data).json()
-        if res and res['code'] == 0:
-            print("晨午检打卡结果 : code = ", res['code'])
-            Remind(sckey).success(" ^_^已经自动为您打卡成功啦~ \n 体温:"+str(self.data['temperature']))
-        else:
-            print("打卡失败,时间:",datetime.datetime.now())
-            Remind(sckey).fail(" @_@非常遗憾的通知您,签到失败了哦,请及时处理~ ")
+        self.handle_res(res)
 
 class Sign(Req):
     listUrl = "https://student.wozaixiaoyuan.com/sign/getSignMessage.json"
@@ -140,12 +163,7 @@ class Sign(Req):
         if id_res:
             self.headers['Content-Type'] = "application/json"
             res = http_post(self.signUrl,headers=self.headers,data=json.dumps(self.data)).json()
-            if res and res['code'] == 0:
-                print("签到结果 : code = ", res['code'])
-                Remind(sckey).success(" ^_^已经自动为您签到成功啦~ ")
-            else:
-                print("签到失败,时间:",datetime.datetime.now())
-                Remind(sckey).fail(" @_@非常遗憾的通知您,签到失败了哦,请及时处理~ ")
+            self.handle_res(res)
 
 
 def main(token):
@@ -156,16 +174,18 @@ def main(token):
     elif seq == 3:
         Sign(token).submit_sign()
     else:
-        print("当前不在签到时间!")
+        logging.warning("当前不在签到时间!")
         return
 
 
 if __name__ == "__main__":
-    secret = input().strip().split('#')
-    secret.append('')
-    token = secret[0]
-    sckey = secret[1]
+    # secret = input().strip().split('#')
+    # secret.append('')
+    # token = secret[0]
+    # sckey = secret[1]
+    token = 'd1b6f1e7-ce81-469e-8429-0c13b364143d'
+    sckey = "SCU143370Tc4ee103495a0e465135b92fba4af27465fef1c5e7800f"
     seconds = random.randint(10, 30)
-    print('将在 {} 秒后开始任务...'.format(seconds))
+    logging.info('将在 {} 秒后开始任务...'.format(seconds))
     time.sleep(seconds)
     main(token)
