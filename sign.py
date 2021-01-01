@@ -9,13 +9,13 @@ import datetime
 
 # seq的1,2,3代表着早，中，晚
 def get_seq():
-    current_hour = datetime.datetime.now()
+    current_hour = datetime.datetime.utcnow()
     current_hour = current_hour.hour
-    if 6 <= current_hour <= 10:
+    if 22 <= current_hour <= 2:
         return 1
-    elif 11 <= current_hour < 15:
+    elif 3 <= current_hour < 7:
         return 2
-    elif 22 <= current_hour < 23:
+    elif 14 <= current_hour < 15:
         return 3
     else:
         return 0
