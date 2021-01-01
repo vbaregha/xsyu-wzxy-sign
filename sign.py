@@ -5,8 +5,6 @@ import datetime
 
 # 我在校园token
 #token = "d1b6f1e7-ce81-469e-8429-0c13b364143d"
-# 喵码
-miaoID = "tW9uDK0"
 
 
 # seq的1,2,3代表着早，中，晚
@@ -35,23 +33,29 @@ def http_post(url, headers={}, data={}, retry=3):
 
 
 class Remind:
-    url = "http://miaotixing.com/trigger"
+    url = ""
     data = {
-        "id": "",
-        "text": ""
+        "text": "校园签到打卡小助手-打卡",
+        "desp": ""
     }
 
-    def __init__(self, id):
-        self.data['id'] = id
+    def __init__(self, sckey):
+        self.url = "https://sc.ftqq.com/{}.send".format(sckey)
     
-    def wechat_msg(self, msg):
-        self.data['text'] = msg
+    def success(self,desp):
+        self.data['text']+='成功'
+        self.data['desp'] = desp
+        res = http_post(self.url, data=self.data)
+        print(res, res.text)
+
+    def fail(self,desp):
+        self.data['text']+='失败'
+        self.data['desp'] = desp
         res = http_post(self.url, data=self.data)
         print(res, res.text)
 
 
 class Req:
-    Message = Remind(miaoID)
     headers = {
         "Host": "student.wozaixiaoyuan.com",
         "Content-Type": "application/x-www-form-urlencoded",
@@ -98,10 +102,10 @@ class Inspect(Req):
         res = http_post(self.saveUrl,headers=self.headers,data=self.data).json()
         if res and res['code'] == 0:
             print("晨午检打卡结果 : code = ", res['code'])
-            self.Message.wechat_msg(" ^_^已经自动为您打卡成功啦~ \n 体温:"+str(self.data['temperature']))
+            Remind(sckey).success(" ^_^已经自动为您打卡成功啦~ \n 体温:"+str(self.data['temperature']))
         else:
             print("打卡失败,时间:",datetime.datetime.now())
-            self.Message.wechat_msg(" @_@非常遗憾的通知您,签到失败了哦,请及时处理~ ")
+            Remind(sckey).fail(" @_@非常遗憾的通知您,签到失败了哦,请及时处理~ ")
 
 class Sign(Req):
     listUrl = "https://student.wozaixiaoyuan.com/sign/getSignMessage.json"
@@ -138,23 +142,30 @@ class Sign(Req):
             res = http_post(self.signUrl,headers=self.headers,data=json.dumps(self.data)).json()
             if res and res['code'] == 0:
                 print("签到结果 : code = ", res['code'])
-                self.Message.wechat_msg(" ^_^已经自动为您签到成功啦~ ")
+                Remind(sckey).success(" ^_^已经自动为您签到成功啦~ ")
             else:
                 print("签到失败,时间:",datetime.datetime.now())
-                self.Message.wechat_msg(" @_@非常遗憾的通知您,签到失败了哦,请及时处理~ ")
+                Remind(sckey).fail(" @_@非常遗憾的通知您,签到失败了哦,请及时处理~ ")
 
 
-def main(arg):
+def main(token):
     seq = get_seq()
     if seq == 1 or seq == 2:
         Inspect.data['seq'] = seq
-        Inspect(arg).submit_insp()
+        Inspect(token).submit_insp()
     elif seq == 3:
-        Sign(arg).submit_sign()
+        Sign(token).submit_sign()
     else:
         print("当前不在签到时间!")
         return
 
 
 if __name__ == "__main__":
-    main(input().strip())
+    secret = input().strip().split('#')
+    secret.append('')
+    token = secret[0]
+    sckey = secret[1]
+    seconds = random.randint(10, 30)
+    print('将在 {} 秒后开始任务...'.format(seconds))
+    time.sleep(seconds)
+    main(token)
