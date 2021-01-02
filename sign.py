@@ -54,7 +54,7 @@ class Remind:
             logging.info("推送消息失败了: {}".format(res.text))
 
     def success(self,desp):
-        if sckey.startswith('SC'):
+        if not sckey.startswith('SC'):
             logging.warning('未正确配置SCKEY,跳过推送...')
             return
         self.data['text']+='成功'
@@ -63,7 +63,7 @@ class Remind:
         
 
     def fail(self,desp):
-        if sckey.startswith('SC'):
+        if not sckey.startswith('SC'):
             logging.warning('未正确配置SCKEY,跳过推送...')
             return
         self.data['text']+='失败'
