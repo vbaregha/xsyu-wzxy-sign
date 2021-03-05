@@ -4,15 +4,16 @@ import datetime
 import logging
 
 logging.basicConfig(
-  level = logging.INFO,
-  format = '%(asctime)s %(levelname)s %(message)s',
-  datefmt = '%Y-%m-%dT%H:%M:%S')
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(message)s',
+    datefmt='%Y-%m-%dT%H:%M:%S')
+
 
 # seq的1,2,3代表着早，中，晚
 def get_seq():
     current_hour = datetime.datetime.utcnow()
     current_hour = current_hour.hour
-    if 0 <= current_hour <= 2:
+    if current_hour >= 22 or current_hour < 2:
         return 1
     elif 3 <= current_hour < 7:
         return 2
@@ -22,6 +23,7 @@ def get_seq():
         return 0
 
 
+# 封装HTTP请求
 def http_post(url, headers={}, data={}, retry=3):
     for i in range(retry):
         try:
@@ -29,10 +31,12 @@ def http_post(url, headers={}, data={}, retry=3):
             return res
         except Exception as e:
             logging.error("post请求错误: %s" % e)
+            logging.info('将在 100 秒后重新发起请求...')
             time.sleep(100)
     logging.error("本次发送请求失败！")
 
 
+# server酱提醒
 class Remind:
     sckey = False
     url = ""
@@ -44,7 +48,7 @@ class Remind:
     def __init__(self, sckey):
         self.sckey = sckey
         self.url = "https://sc.ftqq.com/{}.send".format(sckey)
-    
+
     def send_msg(self):
         res = http_post(self.url, data=self.data)
         result = json.loads(res.text)['errmsg']
@@ -53,20 +57,19 @@ class Remind:
         else:
             logging.info("推送消息失败了: {}".format(res.text))
 
-    def success(self,desp):
+    def success(self, desp):
         if not sckey.startswith('SC'):
             logging.warning('未正确配置SCKEY,跳过推送...')
             return
-        self.data['text']+='成功'
+        self.data['text'] += '成功'
         self.data['desp'] = desp
         self.send_msg()
-        
 
-    def fail(self,desp):
+    def fail(self, desp):
         if not sckey.startswith('SC'):
             logging.warning('未正确配置SCKEY,跳过推送...')
             return
-        self.data['text']+='失败'
+        self.data['text'] += '失败'
         self.data['desp'] = desp
         self.send_msg()
 
@@ -81,19 +84,21 @@ class Req:
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36 MicroMessenger/7.0.9.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat",
         "Referer": "https://servicewechat.com/wxce6d08f781975d91/155/page-frame.html",
         "token": "",  # token
-        #"Content-Length": "211"
+        # "Content-Length": "211"
     }
-    
-    def __init__(self,arg):
+
+    def __init__(self, arg):
         self.headers['token'] = arg
 
     # 获取随机体温
     @staticmethod
-    def get_random_temprature():
+    def get_random_temperature():
         random.seed(time.ctime())
         return "{:.1f}".format(random.uniform(36.2, 36.8))
 
-    def handle_res(self,res):
+    # 处理打卡结果
+    @staticmethod
+    def handle_res(res):
         if res and res['code'] == 0:
             logging.info("自动打卡签到结果 : code = {}".format(res['code']))
             Remind(sckey).success(" ^_^已经自动为您打卡成功啦~ ")
@@ -105,31 +110,34 @@ class Req:
             Remind(sckey).fail(" @_@非常遗憾的通知您,打卡失败了哦,请及时处理~ ")
 
 
+# 晨午检打卡
 class Inspect(Req):
     saveUrl = "https://student.wozaixiaoyuan.com/heat/save.json"
     data = {
         "answers": '["0"]',
         "seq": 0,
         "temperature": 36.5,
-        "userId":"",
-        "latitude":"",
-        "longitude":"",
-        "country":"",
-        "city":"",
-        "district":"",
-        "province":"",
-        "township":"",
-        "street":"",
-        "myArea":""
+        "userId": "",
+        "latitude": "",
+        "longitude": "",
+        "country": "",
+        "city": "",
+        "district": "",
+        "province": "",
+        "township": "",
+        "street": "",
+        "myArea": ""
     }
 
-
+    # 提交打卡请求
     def submit_insp(self):
         self.headers['Content-Type'] = "application/x-www-form-urlencoded"
-        self.data['temperature'] = Req.get_random_temprature()
-        res = http_post(self.saveUrl,headers=self.headers,data=self.data).json()
+        self.data['temperature'] = Req.get_random_temperature()
+        res = http_post(self.saveUrl, headers=self.headers, data=self.data).json()
         self.handle_res(res)
 
+
+# 晚签到
 class Sign(Req):
     listUrl = "https://student.wozaixiaoyuan.com/sign/getSignMessage.json"
     signUrl = "https://student.wozaixiaoyuan.com/sign/doSign.json"
@@ -146,23 +154,29 @@ class Sign(Req):
         "township": "五竹街道"
     }
 
+    # 获取签到ID
     def get_signID(self):
         data = {
             'page': '1',
             'size': '5'
         }
         self.headers['Content-Type'] = "application/x-www-form-urlencoded"
-        res = http_post(self.listUrl,headers=self.headers,data=data).json()
-        if res:
+        res = http_post(self.listUrl, headers=self.headers, data=data).json()
+        if res and res['code'] == -10:
+            logging.error("打卡失败,TOKEN已过期,时间:{}".format(datetime.datetime.now()))
+            Remind(sckey).fail(" @_@由于TOKEN过期失效,打卡失败了哦,请及时处理~ ")
+            return False
+        else:
             self.data["id"] = res['data'][0]['logId']
             self.data["signId"] = res['data'][0]['id']
             return True
 
+    # 提交签到请求
     def submit_sign(self):
         id_res = self.get_signID()
         if id_res:
             self.headers['Content-Type'] = "application/json"
-            res = http_post(self.signUrl,headers=self.headers,data=json.dumps(self.data)).json()
+            res = http_post(self.signUrl, headers=self.headers, data=json.dumps(self.data)).json()
             self.handle_res(res)
 
 
@@ -175,7 +189,7 @@ def main(token):
         Sign(token).submit_sign()
     else:
         logging.warning("当前不在签到时间!")
-        return
+    return
 
 
 if __name__ == "__main__":
