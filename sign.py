@@ -13,12 +13,13 @@ logging.basicConfig(
 def get_seq():
     current_hour = datetime.datetime.utcnow()
     current_hour = current_hour.hour
-    if current_hour >= 22 or current_hour < 2:
-        return 1
-    elif 3 <= current_hour < 7:
-        return 2
-    elif 14 <= current_hour < 15:
-        return 3
+    # if current_hour >= 22 or current_hour < 2:
+#        return 1
+#    elif 3 <= current_hour < 7:
+#        return 2
+#    elif 14 <= current_hour < 15:
+    if 14 <= current_hour < 15:
+       return 3
     else:
         return 0
 
@@ -182,10 +183,11 @@ class Sign(Req):
 
 def main(token):
     seq = get_seq()
-    if seq == 1 or seq == 2:
+#    if seq == 1 or seq == 2:
+    if seq == 3:
         Inspect.data['seq'] = seq
         Inspect(token).submit_insp()
-    elif seq == 3:
+#    elif seq == 3:
         Sign(token).submit_sign()
     else:
         logging.warning("当前不在签到时间!")
