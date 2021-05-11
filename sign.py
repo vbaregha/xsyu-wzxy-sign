@@ -188,7 +188,7 @@ def main(token):
         Inspect.data['seq'] = seq
         Inspect(token).submit_insp()
 #    elif seq == 3:
-        Sign(token).submit_sign()
+#        Sign(token).submit_sign()
     else:
         logging.warning("当前不在签到时间!")
     return
