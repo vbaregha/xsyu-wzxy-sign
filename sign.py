@@ -107,6 +107,7 @@ class Req:
             Remind(sckey).fail(" @_@由于TOKEN过期失效,打卡失败了哦,请及时处理~ ")
         else:
             logging.error("打卡失败,时间:{}".format(datetime.datetime.now()))
+            logging.error("打卡失败,时间:{}",res)
             Remind(sckey).fail(" @_@非常遗憾的通知您,打卡失败了哦,请及时处理~ ")
 
 
