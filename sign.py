@@ -13,12 +13,11 @@ logging.basicConfig(
 def get_seq():
     current_hour = datetime.datetime.utcnow()
     current_hour = current_hour.hour
-    # if current_hour >= 22 or current_hour < 2:
-#        return 1
-#    elif 3 <= current_hour < 7:
-#        return 2
-#    elif 14 <= current_hour < 15:
-    if 14 <= current_hour < 15:
+    if 0 <= current_hour < 9:
+        return 1
+    elif 11 <= current_hour < 15:
+        return 2
+    elif 17 <= current_hour < 21:
        return 3
     else:
         return 0
@@ -119,15 +118,16 @@ class Inspect(Req):
         "seq": 0,
         "temperature": 36.5,
         "userId": "",
-        "latitude": "34.102702",
-        "longitude": "108.653637",
+        "latitude": "23.08331",
+        "longitude": "113.3172",
         "country": "中国",
-        "city": "西安市",
-        "district": "鄠邑区",
-        "province": "陕西省",
-        "township": "五竹街道",
-        "street": "",
-        "myArea": ""
+        "city": "广州市",
+        "district": "海珠区",
+        "province": "广东省",
+        "township": "江海街道",
+        "street": "上冲中约新街一巷",
+        "myArea": "",
+        "areacode":440105
     }
 
     # 提交打卡请求
@@ -183,7 +183,7 @@ class Sign(Req):
 
 def main(token):
     seq = get_seq()
-#    if seq == 1 or seq == 2:
+    if seq == 1 or seq == 2:
     if seq == 3:
         Inspect.data['seq'] = seq
         Inspect(token).submit_insp()
