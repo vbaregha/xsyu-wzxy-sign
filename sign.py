@@ -13,14 +13,14 @@ logging.basicConfig(
 def get_seq():
     current_hour = datetime.datetime.utcnow()
     current_hour = current_hour.hour
-#     if 8 <= current_hour < 18:
-#         return 1
-#     elif 19 <= current_hour < 23:
-#         return 2
-#     elif 0 <= current_hour < 7:
-#        return 3
-#     else: 
-     return 3
+    if 8 <= current_hour < 18:
+        return 3
+    elif 19 <= current_hour < 23:
+        return 3
+    elif 0 <= current_hour < 7:
+       return 3
+    else: 
+     return 0
 
 
 # 封装HTTP请求
