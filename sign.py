@@ -183,8 +183,7 @@ class Sign(Req):
 
 def main(token):
     seq = get_seq()
-    if seq == 1 or seq == 2:
-    if seq == 3:
+    if seq == 1 or seq == 2 or seq == 3:
         Inspect.data['seq'] = seq
         Inspect(token).submit_insp()
 #    elif seq == 3:
