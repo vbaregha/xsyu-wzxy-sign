@@ -19,8 +19,6 @@ def get_seq():
         return 2
     elif 17 <= current_hour < 21:
        return 3
-    else:
-        return 0
 
 
 # 封装HTTP请求
