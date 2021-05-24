@@ -82,7 +82,7 @@ class Req:
         "Connection": "keep-alive",
         "charset": "utf-8",
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36 MicroMessenger/7.0.9.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat",
-        "Referer": "https://servicewechat.com/wxce6d08f781975d91/155/page-frame.html",
+        "Referer": "https://servicewechat.com/wxce6d08f781975d91/172/page-frame.html",
         "token": "",  # token
         # "Content-Length": "211"
     }
