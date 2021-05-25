@@ -14,9 +14,9 @@ def get_seq():
     current_hour = datetime.datetime.utcnow()
     current_hour = current_hour.hour
     if 17 <= current_hour < 23:
-        return 3
+        return 1
     elif 4 <= current_hour < 7:
-        return 3
+        return 2
     elif 9 <= current_hour < 13:
        return 3
     else: 
