@@ -38,13 +38,17 @@ https://blog.csdn.net/fajing_feiyue/article/details/111569537
 
 
 #### 2.1、下载Fiddler
-
-下载最新版fiddler ，可以在官网下载：https://www.telerik.com/download/fiddler
-
+ 
+相关抓包工具已经上传在仓库中`FiddlerSetup.7z`,可以自行下载并安装。
+ 
+或者下载最新版fiddler ，可以在官网下载：https://www.telerik.com/download/fiddler
+ 
 
 #### 2.2、安装及配置Fidder
-
- ① 正常安装，下一步，下一步，可以修改软件安装地址，安装完毕后，打开软件。按下图图进行配置勾选
+ 
+ 抓包的原理是中间人攻击，就是在本机和服务器之间增加一个代理的中间人，但是这种情况下只能抓包未加密的HTTP请求，而我在校园的服务器连接使用的是HTTPS，那么我们就要在本地进行证书的安装，以下图片中已包含所有步骤。
+ 
+ ① 正常安装，下一步，下一步，可以修改软件安装地址，安装完毕后，打开软件。按下图图进行配置勾选，一般来说，按照图片上的操作进行勾选就行。
 
 ![Fiddler01.png](https://upload-images.jianshu.io/upload_images/14926374-b6432d6c9fffa9ce.png)
 
@@ -52,7 +56,7 @@ https://blog.csdn.net/fajing_feiyue/article/details/111569537
 
 ![Fiddler03.png](https://upload-images.jianshu.io/upload_images/14926374-24794af241fd5afa.png)
 
-**下面两个图是配置证书，如果之前没有自动弹出来的话，最好手动配置一下，否则无法抓包https请求**
+ **下面两个图是配置证书，如果之前没有自动弹出来的话，最好手动配置一下，否则无法抓包https请求**
 
 ![Fiddler04.png](https://img-blog.csdnimg.cn/2020122300105644.png)
 
@@ -67,23 +71,29 @@ https://blog.csdn.net/fajing_feiyue/article/details/111569537
 
 #### 2.3、获取token值
 
-登录电脑端微信，打开我在校园日检日报  
+登录电脑端微信，通过微信公众号的入口打开我在校园日检日报  
 留意最下方出现的 `student.wozaixiaoyuan.com` 双击打开  
 
 ![20201202170352](http://img.chaney.top/img/20201202170352.png)
 
 出现的这一串token字符串值就是我们需要的了，第一步任务已经实现。如果后续登录失效了，重新抓包获取这个值即可，如果不出现特殊情况这个登录能保持四天左右。
+ 
+ **注意：在这一步我们只需要key-value中的value就可以**
 
 ![20201202095745](http://img.chaney.top/img/20201202095745.png)
 
 
 ### 3. 添加 token 至 Secrets
+ 
+ 这一步是Github actions 的机制，为了避免将token写入代码被明文展示。
 
 - 回到项目页面，依次点击`Settings`-->`Secrets`-->`New secret`
 
 > ![new-secret.png](https://i.loli.net/2020/10/28/sxTuBFtRvzSgUaA.png)
 
 - 建立名为`TOKEN`的 secret，值为`步骤2.3`中获取的`token`内容，最后点击`Add secret`
+ 
+ **注意：这一步不能将`token：xxxxxxxxxxxxx`完整填入，需要填入的是`xxxxxxxxxxxxx`**
 
 - secret 名字必须为`TOKEN`！
 
@@ -114,13 +124,11 @@ https://blog.csdn.net/fajing_feiyue/article/details/111569537
 2021-03-05T03:24:22 INFO 推送消息成功: {"errno":0,"errmsg":"success","dataset":"done"}
 ```
 
-如果失败，你还会收到一封来自GitHub、标题为`Run failed: xsyu-wzxy-sign - master`的邮件。
-
 </details>
 
 ## 订阅
 
-若开启订阅推送，无论成功与否，都会收到微信通知。
+这一步是开启微信提醒，请按照以下方式操作：
 
 - 使用 GitHub 登录 [sc.ftqq.com](http://sc.ftqq.com/?c=github&a=login) 创建账号
 - 点击「[发送消息](http://sc.ftqq.com/?c=code)」，获取`SCKEY`
