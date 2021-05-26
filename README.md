@@ -123,8 +123,8 @@ https://blog.csdn.net/fajing_feiyue/article/details/111569537
 
 无论成功或失败都会输出相应的信息：
 ```
-2021-03-05T03:24:21 INFO 自动打卡签到结果 : code = 0
-2021-03-05T03:24:22 INFO 推送消息成功: {"errno":0,"errmsg":"success","dataset":"done"}
+2021-05-26T05:47:24 INFO 自动打卡签到结果 : code = 0
+2021-05-26T05:47:27 INFO 推送消息成功: {"errno":0,"errmsg":"success","dataset":"done"}
 ```
 
 </details>
