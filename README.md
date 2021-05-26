@@ -5,19 +5,19 @@ xsyu-wzxy-sign for GDUFE
 </h1>
 </div>
 
-## 🌀简介
+## 简介
 基于原有项目的基础上，对打卡参数进行调整使其适用本校广州校区
 
  > 注意：由于小程序限制token有效期为四天，请注意时间及时更换token，否则打卡失败
 
 
-## 💡特性
+## 特性
 
 - [x] **自动签到**  程序会在每天（自定义时间）自动执行打卡和签到流程(可能存在延迟)，也可以随时通过部署教程的`步骤4`手动触发，具体时间参照[此处](.github/workflows/main.yml)
 - [x] **支持订阅**  通过配置`SCKEY`开启订阅，每此执行打卡或签到后将签到结果推送到微信上
 - [x] **无需服务器**  通过github Action定时任务，不需要自己部署服务器即可定时执行
 
-## 📐部署
+## 部署
 
 <details>
 <summary>查看教程</summary>
@@ -101,7 +101,7 @@ https://blog.csdn.net/fajing_feiyue/article/details/111569537
 
 至此，部署完毕。
 
-## 🔍结果
+## 结果
 
 当你完成上述流程，可以在`Actions`页面点击`xsyu-wzxy-sign`-->`build`-->`Run sign`查看结果。
 
@@ -118,7 +118,7 @@ https://blog.csdn.net/fajing_feiyue/article/details/111569537
 
 </details>
 
-## 🔔订阅
+## 订阅
 
 若开启订阅推送，无论成功与否，都会收到微信通知。
 
@@ -127,7 +127,7 @@ https://blog.csdn.net/fajing_feiyue/article/details/111569537
 - 点击「[微信推送](http://sc.ftqq.com/?c=wechat&a=bind)」，完成微信绑定
 - 建立名为`SCKEY`的 secret，并添加获取的 SCKEY 值，开启订阅推送
 
-## ❗️协议
+## 协议
 
 使用 xsyu-wzxy-sign 即表明，您知情并同意：
 
