@@ -83,7 +83,7 @@ class Req:
         "charset": "utf-8",
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36 MicroMessenger/7.0.9.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat",
         "Referer": "https://servicewechat.com/wxce6d08f781975d91/172/page-frame.html",
-        "token": "13e6abb6-1f79-48cf-a9ec-d819315b1f47",  # token
+        "token": "",  # token
         # "Content-Length": "211"
     }
 
@@ -190,7 +190,7 @@ def main(token):
 #    elif seq == 3:
 #        Sign(token).submit_sign()
     else:
-        logging.warning("当前不在签到时间!")
+        logging.warning("当前不在打卡时间!")
     return
 
 
