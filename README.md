@@ -3,8 +3,10 @@
 <h1 align="center">
 xsyu-wzxy-sign for GDUFE
 </h1>
+ <h2>
+  使用前请三思！建议考研的同学才使用，如果身体不适，请上报真实的健康信息并停止使用!
+ </h2>
 </div>
-
 ## 简介
 基于原有项目的基础上，对打卡参数进行调整使其适用本校广州校区
 
@@ -129,6 +131,7 @@ https://blog.csdn.net/fajing_feiyue/article/details/111569537
 ## 订阅
 
 这一步是开启微信提醒，请按照以下方式操作：
+server酱是一个免费的消息发送工具，利用了微信公众号的客服消息原理，比较简单易用，我已经针对本校同学配置好，只需要以下步骤就可以获取消息推送。
 
 - 使用 GitHub 登录 [sc.ftqq.com](http://sc.ftqq.com/?c=github&a=login) 创建账号
 - 点击「[发送消息](http://sc.ftqq.com/?c=code)」，获取`SCKEY`
@@ -141,3 +144,5 @@ https://blog.csdn.net/fajing_feiyue/article/details/111569537
 
 - 本项目初衷是为经常忘记打卡或懒人提供方便，请勿使用本项目进行上报虚假定位信息等违规操作
 - 由于使用本项目造成的一切后果，包括但不限于 打卡执行失败、被学校请去喝茶等，概不负责
+- 如果身体不适，请上报真实的健康信息
+- 拒绝滥用，收费，炫耀
