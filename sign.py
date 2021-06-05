@@ -17,7 +17,7 @@ def get_seq():
         return 1
     elif 4 <= current_hour < 7:
         return 2
-    elif 9 <= current_hour < 13:
+    elif 9 <= current_hour < 15:
        return 3
     else: 
      return 0
